@@ -7,7 +7,7 @@ data Usuario = Usuario
     senha :: String, 
     multa :: Double,
     historico :: [String],
-    emprestimos :: [String]
+    emprestimos :: [Emprestimo]
     } deriving (Show)
 
 data Livro = Livro
@@ -22,5 +22,15 @@ data Biblioteca = Biblioteca
     livros :: [Livro]
     } deriving (Show)
 
+data Emprestimo = Emprestimo
+    {
+    idUser :: Int,
+    codigoLivro :: String,
+    dataEmprestimo :: String
+    } deriving (Eq, Show)
+
 limiteEmprestimos :: Int
 limiteEmprestimos = 3
+
+valorMultaPorDia :: Double
+valorMultaPorDia = 1.5

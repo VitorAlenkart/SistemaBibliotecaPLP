@@ -15,3 +15,8 @@ cadastrarLivro livro bib =
 removerLivro :: String -> Biblioteca -> Biblioteca
 removerLivro cod bib =
     bib { livros = filter (\l -> codigo l /= cod) (livros bib) }
+
+pegarLivro :: String -> [Livro] -> String
+pegarLivro codLivro (x:xs)
+    | codLivro == codigo x = titulo x
+    | otherwise = pegarLivro codLivro xs 
