@@ -8,29 +8,38 @@ data Usuario = Usuario
     multa :: Double,
     historico :: [String],
     emprestimos :: [Emprestimo]
-    } deriving (Show)
+    } deriving (Eq , Show)
+
 
 data Livro = Livro
-    { codigo :: String, 
-    titulo :: String, 
-    autor :: String, 
-    disponivel :: Bool
-    } deriving (Show)
+    { codigo :: String
+        ,titulo :: String
+        ,autor :: String 
+        ,disponivel :: Bool
+    } deriving (Eq , Show)
 
 data Biblioteca = Biblioteca
-    { usuarios :: [Usuario], 
-    livros :: [Livro]
+    { usuarios :: [Usuario] 
+      , livros :: [Livro]
     } deriving (Show)
 
 data Emprestimo = Emprestimo
-    {
-    idUser :: Int,
-    codigoLivro :: String,
-    dataEmprestimo :: String
+    { idUser :: Int
+        ,codigoLivro :: String
+        ,dataEmprestimo :: String
+        ,dataDevolucaoPrevista :: String  
+        ,qtdRenovacoes         :: Int
     } deriving (Eq, Show)
 
 limiteEmprestimos :: Int
 limiteEmprestimos = 3
 
+limiteRenovacoes :: Int   
+limiteRenovacoes = 2
+
+valorMultaBasePorDia :: Double
+valorMultaBasePorDia = 1.0
+
 valorMultaPorDia :: Double
 valorMultaPorDia = 1.5
+

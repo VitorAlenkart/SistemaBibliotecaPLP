@@ -2,11 +2,14 @@ module UsuarioService where
 
 import Tipos
 
+import Data.Time (Day, parseTimeM, defaultTimeLocale, diffDays)
+
 cadastrarUsuario :: Usuario -> Biblioteca -> Biblioteca
 cadastrarUsuario usuario bib =
     bib { usuarios = usuario : usuarios bib }
 
 pegarUsuario :: Int -> [Usuario] -> Usuario
+pegarUsuario id [] = error "Usuário não encontrado!"
 pegarUsuario id (x:xs)
     | id == (idUsuario x) = x
     | otherwise = pegarUsuario id xs
@@ -30,5 +33,36 @@ printarHistorico (x:xs) = do
     print ("Nome do Livro: " ++ x ++ "|")
     printarHistorico xs
 
-controleMultas :: Int -> Biblioteca -> Double
-controleMultas id bib = multa (pegarUsuario id (usuarios bib))
+autenticarUsuario :: String -> String -> [Usuario] -> Maybe Usuario
+autenticarUsuario loginD senhaD [] = Nothing 
+autenticarUsuario loginD senhaD (x:xs)
+    | loginD == login x && senhaD == senha x = Just x
+    | otherwise = autenticarUsuario loginD senhaD xs
+
+
+gerenciarRenovacao :: String -> String -> Double
+gerenciarRenovacao dataRenovacao dataAtual = 
+    let prazo = stringParaData dataRenovacao
+        hoje =  stringParaData dataAtual
+        diasAtraso = diffDays hoje prazo
+
+    in if diasAtraso <= 0
+        then 0.0
+        else calculaRegra(fromIntegral diasAtraso)
+    where
+        calculaRegra dias
+            | dias <= 7 = dias * valorMultaPorDia
+            | otherwise = (7 * valorMultaBasePorDia) + ((dias - 7) * 3.0)
+
+        stringParaData :: String -> Day
+        stringParaData str = case parseTimeM True defaultTimeLocale "%Y-%m-%d" str of
+            Just dataValida -> dataValida
+            Nothing -> error ("Formato de data inválido: " ++ str)
+
+aplicarMulta :: Int -> Double -> Biblioteca -> Biblioteca
+aplicarMulta id valorMulta bib =
+    bib { usuarios = map atualizar(usuarios bib) }
+    where 
+        atualizar u
+            | idUsuario u == id = u { multa = multa u + valorMulta}
+            | otherwise = u
