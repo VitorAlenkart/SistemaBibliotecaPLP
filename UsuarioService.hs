@@ -29,3 +29,6 @@ printarHistorico [] = return()
 printarHistorico (x:xs) = do
     print ("Nome do Livro: " ++ x ++ "|")
     printarHistorico xs
+
+controleMultas :: Int -> Biblioteca -> Double
+controleMultas id bib = multa (pegarUsuario id (usuarios bib))
