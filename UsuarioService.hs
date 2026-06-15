@@ -14,6 +14,22 @@ pegarUsuario id (x:xs)
     | id == (idUsuario x) = x
     | otherwise = pegarUsuario id xs
 
+atualizarUsuario :: Int -> Maybe String -> Maybe String -> Biblioteca -> Biblioteca
+atualizarUsuario id novoLogin novaSenha bib =
+    bib { usuarios = map atualizar (usuarios bib) }
+
+    where
+        atualizar u
+            | idUsuario u == id = u
+                { login = definirDado novoLogin (login u)
+                , senha = definirDado novaSenha (senha u)
+                }
+            | otherwise = u
+        
+        definirDado :: Maybe String -> String -> String
+        definirDado (Just novoValor) _ = novoValor
+        definirDado Nothing valorAntigo = valorAntigo
+
 podeEmprestar :: Int -> Biblioteca -> Bool
 podeEmprestar usuario blib =
     length(emprestimos (pegarUsuario usuario (usuarios blib))) <= limiteEmprestimos
