@@ -4,6 +4,8 @@ import Tipos
 import LivroService
 import UsuarioService
 import Data.Time (Day)
+import Data.Time
+import Data.Time.Format
 
 realizarEmprestimo :: String -> Int -> String -> Biblioteca -> Biblioteca
 realizarEmprestimo codLivro id date bib 
@@ -33,12 +35,14 @@ realizarEmprestimo codLivro id date bib
                     {
                         idUser = id,
                         codigoLivro = codLivro,
-                        dataEmprestimo = date
+                        dataEmprestimo = date,
+                        dataDevolucaoPrevista = extenderPrazo date 30,
+                        qtdRenovacoes= 0
                     }
                 nomeLivro = pegarLivro (codigoLivro livro) (livros bib)
 
-devolverEmprestimo :: Emprestimo -> Biblioteca -> Biblioteca
-devolverEmprestimo emprestimo bib =
+devolverEmprestimo :: Emprestimo -> String -> Biblioteca -> Biblioteca
+devolverEmprestimo emprestimo dataAtual bib =
     bib 
         {
             usuarios = map atualizarUsuario (usuarios bib),
@@ -48,7 +52,8 @@ devolverEmprestimo emprestimo bib =
             atualizarUsuario u
                 | idUsuario u == id =
                     u {
-                        emprestimos = filter (/= emprestimo) (emprestimos u)
+                        emprestimos = filter (/= emprestimo) (emprestimos u),
+                        multa = multa u + gerenciarMulta (dataDevolucaoPrevista emprestimo) dataAtual
                     }
                 | otherwise = u
             atualizarLivro l
@@ -91,3 +96,9 @@ renovarEmprestimo idUser codLivro dataAtual bib
                 }
             | otherwise = emp
 
+extenderPrazo :: String -> Integer -> String
+extenderPrazo dataAtual dias =
+    case parseTimeM True defaultTimeLocale "%d/%m/%Y" dataAtual :: Maybe Day of
+        Nothing -> error "Data inválida"
+        Just dia ->
+            formatTime defaultTimeLocale "%d/%m/%Y" (addDays dias dia)

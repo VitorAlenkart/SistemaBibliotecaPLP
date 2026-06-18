@@ -56,8 +56,8 @@ autenticarUsuario loginD senhaD (x:xs)
     | otherwise = autenticarUsuario loginD senhaD xs
 
 
-gerenciarRenovacao :: String -> String -> Double
-gerenciarRenovacao dataRenovacao dataAtual = 
+gerenciarMulta :: String -> String -> Double
+gerenciarMulta dataRenovacao dataAtual = 
     let prazo = stringParaData dataRenovacao
         hoje =  stringParaData dataAtual
         diasAtraso = diffDays hoje prazo
@@ -71,7 +71,7 @@ gerenciarRenovacao dataRenovacao dataAtual =
             | otherwise = (7 * valorMultaBasePorDia) + ((dias - 7) * 3.0)
 
         stringParaData :: String -> Day
-        stringParaData str = case parseTimeM True defaultTimeLocale "%Y-%m-%d" str of
+        stringParaData str = case parseTimeM True defaultTimeLocale "%d/%m/%Y" str of
             Just dataValida -> dataValida
             Nothing -> error ("Formato de data inválido: " ++ str)
 
